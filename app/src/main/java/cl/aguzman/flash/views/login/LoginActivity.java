@@ -1,4 +1,4 @@
-package cl.aguzman.flash;
+package cl.aguzman.flash.views.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +9,12 @@ import com.firebase.ui.auth.ResultCodes;
 
 import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity {
+import cl.aguzman.flash.R;
+import cl.aguzman.flash.presenter.ValidateCallback;
+import cl.aguzman.flash.presenter.ValidateLogin;
+import cl.aguzman.flash.views.main.MainActivity;
+
+public class LoginActivity extends AppCompatActivity implements ValidateCallback{
 
     private static final int RC_SIGN_IN = 529;
 
@@ -17,15 +22,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        if (new CurrentUser().getCurrentUser() != null){
-            logged();
-        }else{
-            signUp();
-        }
+        new ValidateLogin(this).loginValidate();
     }
 
-    private void signUp() {
+    public void signUp() {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -35,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
                                 new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()/*,
                                 new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/)
                         ).setIsSmartLockEnabled(false)
+                        .setTheme(R.style.LoginTheme)
+                        .setLogo(R.mipmap.logo)
                         .build(),
                 RC_SIGN_IN);
     }
@@ -49,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void logged(){
+    public void logged(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
